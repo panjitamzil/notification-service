@@ -8,6 +8,7 @@ var Config *Cfg
 
 type Cfg struct {
 	SMTPConfig SMTPConfig
+	SMSConfig  SMSConfig
 }
 
 type SMTPConfig struct {
@@ -16,6 +17,10 @@ type SMTPConfig struct {
 	Username string
 	Password string
 	From     string
+}
+
+type SMSConfig struct {
+	APIKey string `json:"SMS_API_KEY"`
 }
 
 func Load() {
@@ -27,9 +32,16 @@ func Load() {
 			Password: os.Getenv("SMTP_PASSWORD"),
 			From:     os.Getenv("SMTP_SENDER"),
 		},
+		SMSConfig: SMSConfig{
+			APIKey: os.Getenv("SMS_API_KEY"),
+		},
 	}
 }
 
 func GetSMTPConfig() *SMTPConfig {
 	return &Config.SMTPConfig
+}
+
+func GetSMSAPIKey() string {
+	return Config.SMSConfig.APIKey
 }

@@ -4,6 +4,7 @@ import (
 	"log"
 	"notification-service/internal/api"
 	"notification-service/internal/config"
+	"notification-service/internal/notification"
 	"notification-service/internal/pkg/logger"
 
 	"github.com/joho/godotenv"
@@ -17,6 +18,7 @@ func main() {
 
 	logger.Init()
 	config.Load()
+	notification.StartWorkers()
 
 	router := api.SetupRouter()
 

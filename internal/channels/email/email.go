@@ -9,16 +9,18 @@ import (
 	"notification-service/internal/config"
 )
 
-func SendEmail(to []string, subject, body string) error {
-	cfg := config.GetSMTPConfig()
+type EmailNotifier struct {
+	Config *config.SMTPConfig
+}
 
-	auth := smtp.PlainAuth("", cfg.Username, cfg.Password, cfg.Server)
-	address := fmt.Sprintf("%s:%s", cfg.Server, cfg.Port)
+func (e *EmailNotifier) Send(to []string, subject, body string) error {
+	auth := smtp.PlainAuth("", e.Config.Username, e.Config.Password, e.Config.Server)
+	address := fmt.Sprintf("%s:%s", e.Config.Server, e.Config.Port)
 
 	msg := fmt.Sprintf("From: %s\r\nTo: %s\r\nSubject: %s\r\n\r\n%s",
-		cfg.From, strings.Join(to, ","), subject, body)
+		e.Config.From, strings.Join(to, ","), subject, body)
 
-	err := smtp.SendMail(address, auth, cfg.From, to, []byte(msg))
+	err := smtp.SendMail(address, auth, e.Config.From, to, []byte(msg))
 	if err != nil {
 		log.Printf("Failed to send email to %v: %v", to, err)
 		return err
