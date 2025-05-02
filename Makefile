@@ -8,6 +8,10 @@ run: build
 	@echo "Running notification-service..."
 	@./notification-service
 
+test:
+	@echo "Running unit tests..."
+	@go test ./... -v
+
 docker-build:
 	@echo "Building Docker image..."
 	@docker build -t notification-service .

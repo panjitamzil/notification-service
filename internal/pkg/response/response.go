@@ -1,32 +1,40 @@
 package response
 
-import "github.com/labstack/echo/v4"
+import (
+	"net/http"
 
-type response struct {
+	"github.com/labstack/echo/v4"
+)
+
+type APIResponse struct {
 	Status  int         `json:"status" example:"200"`
 	Message string      `json:"message" example:"success"`
 	Data    interface{} `json:"data,omitempty" swaggerignore:"true"`
 }
 
-func SuccessResponse(c echo.Context, status int, data interface{}) error {
-	return c.JSON(status, response{
-		Status:  status,
-		Message: "success",
-	})
-}
-
-func SuccessResponseWithCustomMessage(c echo.Context, status int, message string, data interface{}) error {
-	return c.JSON(status, response{
+func Success(c echo.Context, status int, message string, data interface{}) error {
+	return c.JSON(status, APIResponse{
 		Status:  status,
 		Message: message,
 		Data:    data,
 	})
 }
 
-func ErrorResponse(c echo.Context, status int, message string) error {
-	return c.JSON(status, response{
+func OK(c echo.Context, data interface{}) error {
+	return Success(c, http.StatusOK, "success", data)
+}
+
+func Created(c echo.Context, data interface{}) error {
+	return Success(c, http.StatusCreated, "created", data)
+}
+
+func Accepted(c echo.Context) error {
+	return c.NoContent(http.StatusAccepted)
+}
+
+func Error(c echo.Context, status int, errMsg string) error {
+	return c.JSON(status, APIResponse{
 		Status:  status,
-		Message: message,
-		Data:    nil,
+		Message: errMsg,
 	})
 }
