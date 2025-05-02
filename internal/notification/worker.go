@@ -38,9 +38,17 @@ func worker(id int) {
 		switch task.Type {
 		case "email":
 			smtpConfig := config.GetSMTPConfig()
+			if smtpConfig == nil {
+				log.Printf("Worker %d: SMTP configuration is nil", id)
+				continue
+			}
 			notifier, err = NewNotifier("email", smtpConfig)
 		case "sms":
 			apiKey := config.GetSMSAPIKey()
+			if apiKey == "" {
+				log.Printf("Worker %d: SMS API key is empty", id)
+				continue
+			}
 			notifier, err = NewNotifier("sms", apiKey)
 		default:
 			log.Printf("Worker %d: Unsupported notification type: %s", id, task.Type)
