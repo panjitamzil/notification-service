@@ -5,6 +5,7 @@ import (
 	"notification-service/internal/channels/email"
 	"notification-service/internal/channels/sms"
 	"notification-service/internal/config"
+	"notification-service/internal/pkg/pkg_error"
 )
 
 type Notifier interface {
@@ -15,26 +16,26 @@ func NewNotifier(notificationType string, dependencies ...interface{}) (Notifier
 	switch notificationType {
 	case "email":
 		if len(dependencies) < 1 {
-			return nil, errors.New("missing SMTP config")
+			return nil, errors.New(pkg_error.MISSING_CONFIG)
 		}
 		smtpConfig, ok := dependencies[0].(*config.SMTPConfig)
 		if !ok {
-			return nil, errors.New("invalid SMTP config type")
+			return nil, errors.New(pkg_error.INVALID_CONFIG)
 		}
 		return &email.EmailNotifier{Config: smtpConfig}, nil
 
 	case "sms":
 		if len(dependencies) < 1 {
-			return nil, errors.New("missing API key")
+			return nil, errors.New(pkg_error.MISSING_CONFIG)
 		}
 
 		apiKey, ok := dependencies[0].(string)
 		if !ok {
-			return nil, errors.New("invalid API key type")
+			return nil, errors.New(pkg_error.INVALID_CONFIG)
 		}
 		return &sms.SMSNotifier{APIKey: apiKey}, nil
 
 	default:
-		return nil, errors.New("unsupported notification type")
+		return nil, errors.New(pkg_error.UNSUPPORTED_TYPE)
 	}
 }
